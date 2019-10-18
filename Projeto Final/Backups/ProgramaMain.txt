@@ -1,0 +1,146 @@
+package com.example.imc
+import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.view.View
+import android.widget.*
+
+class MainActivity : AppCompatActivity() {
+
+    //Declarando as variáveis globais
+
+    lateinit var sexo: Spinner
+    lateinit var attAl: TextView
+    lateinit var attPeso: TextView
+    lateinit var seek1: SeekBar
+    lateinit var seek2: SeekBar
+    lateinit var botao: Button
+    lateinit var table: Button
+    var res: Double = 0.0
+    var calcA: Double = 0.0
+    var calcP: Int = 0
+    private var resulTxt: String = ""
+    var opcao: Int = 0
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        //Desenvolvimento do Spinner
+
+        sexo=findViewById(R.id.spnSexo)
+        var sexosOP=arrayOf("Sexo", "Masculino", "Feminino")
+        sexo.adapter=ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, sexosOP)
+        sexo.onItemSelectedListener=object: AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                Toast.makeText(applicationContext, "É necessário selecionar um gênero!", Toast.LENGTH_LONG).show()
+            }
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                opcao=position
+                if(position==0){
+                    Toast.makeText(applicationContext, "É necessário selecionar um gênero!", Toast.LENGTH_SHORT).show()
+                }
+                if(position==1){
+                    Toast.makeText(applicationContext, "Gênero: Masculino", Toast.LENGTH_SHORT).show()
+                }
+                if(position==2){
+                    Toast.makeText(applicationContext, "Gênero: Feminino", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        //Resgatando os objetos
+
+        attAl=findViewById(R.id.txvAttAl)
+        attPeso=findViewById(R.id.txtAttPeso)
+        seek1=findViewById(R.id.seekBarAL)
+        seek2=findViewById(R.id.seekBarPESO)
+        botao=findViewById(R.id.btnCalcular)
+        table=findViewById(R.id.btnTabela)
+
+        //Desenvolvendo a SeekBar da altura
+
+        seek1.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                calcA=(progress/100.0)
+                attAl.text=" "+calcA
+            }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+            }
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+            }
+        })
+
+        //Desenvolvendo a SeekBar do peso
+
+        seek2.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                calcP=progress
+                attPeso.text=" "+progress
+            }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+            }
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+            }
+        })
+
+        //Calculo do IMC (Imc=Peso/Altura^2)
+
+        res=calcP/(calcA*calcA)
+
+        //Verificando o gênero para definir o IMC
+
+        if(opcao==1){
+            if(res<20){
+                resulTxt="Você tem excesso de magreza!"
+            }
+            else if(res>=20 && res<25){
+                resulTxt="Você está no peso ideal!"
+            }
+            else if(res>=25 && res<30){
+                resulTxt="Você tem obesidade leve!"
+            }
+            else if(res>=30 && res<41){
+                resulTxt="Você tem obesidade moderada!"
+            }
+            else if(res>40){
+                resulTxt="Você tem obesidade morbida!"
+            }
+            botao.setOnClickListener{
+                Toast.makeText(applicationContext, "Seu imc é: "+res+", "+resulTxt, Toast.LENGTH_LONG).show()
+            }
+        }
+        else if(opcao==2){
+            if(res<19){
+                resulTxt="Você tem excesso de magreza!"
+            }
+            else if(res>=19 && res<24){
+                resulTxt="Você está no peso ideal!"
+            }
+            else if(res>=24 && res<29){
+                resulTxt="Você tem obesidade leve!"
+            }
+            else if(res>=29 && res<40){
+                resulTxt="Você tem obesidade moderada!"
+            }
+            else if(res>39){
+                resulTxt="Você tem obesidade morbida!"
+            }
+            botao.setOnClickListener{
+                Toast.makeText(applicationContext, "Seu imc é: "+res+", "+resulTxt, Toast.LENGTH_LONG).show()
+            }
+        }
+        else if(opcao==0){
+            resulTxt="Não esqueça de selecionar um gênero!"
+            botao.setOnClickListener{
+                Toast.makeText(applicationContext, resulTxt, Toast.LENGTH_LONG).show()
+            }
+        }
+        table.setOnClickListener{
+            Toast.makeText(applicationContext, "IMC < 20 (EXCESSO DE MAGREZA)\n" +
+                                                    "20 <= IMC < 25 (PESO IDEAL)\n" +
+                                                    "25 <= IMC < 30 (OBESIDADE LEVE)\n" +
+                                                    "30 <= IMC < 40 (OBESIDADE MODERADA)\n" +
+                                                    "40 < IMC (OBESIDADE MÓRBIDA)", Toast.LENGTH_LONG).show()
+        }
+    }
+}
